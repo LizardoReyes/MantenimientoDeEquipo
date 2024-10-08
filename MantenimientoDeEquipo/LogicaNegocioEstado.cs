@@ -8,96 +8,41 @@ using System.Threading.Tasks;
 
 namespace MantenimientoDeEquipo
 {
-    class LogicaNegocioEstado
+    public class LogicaNegocioEstado : LogicaNegocioBase
     {
-        // Definicion global
-        Conexion objCon = new Conexion();
-        SqlConnection cn = new SqlConnection();
-        string mensaje;
-        // Método que lista los estados
+        // Métodos específicos de LogicaNegocioEstado
         public DataTable listaEstado()
         {
-            cn = objCon.getConecta();
-            SqlDataAdapter da = new SqlDataAdapter("SP_LISTAESTADOEQUIPOS", cn);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            return dt;
+            return EjecutarConsulta("SP_LISTAESTADOEQUIPOS");
         }
-        // Método que registra un nuevo estado equipo
+
         public string nuevoEstadoEquipo(string codigo, string descripcion)
         {
-            mensaje = "";
-            cn = objCon.getConecta();
-            cn.Open();
-            SqlCommand cmd = new SqlCommand("SP_NUEVOESTADOEQUIPO", cn);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.Add("cod", SqlDbType.Char).Value = codigo;
-            cmd.Parameters.Add("des", SqlDbType.VarChar).Value = descripcion;
-            try
-            {
-                int n = cmd.ExecuteNonQuery();
-                mensaje = n.ToString() + " ESTADO EQUIPO REGISTRADO CORRECTAMENTE";
-            }
-            catch (SqlException ex)
-            {
-                mensaje = ex.Message;
-            }
-            finally
-            {
-                cn.Close();
-            }
-            return mensaje;
+            var parametros = new Dictionary<string, object>
+        {
+            { "cod", codigo },
+            { "des", descripcion }
+        };
+            return EjecutarComando("SP_NUEVOESTADOEQUIPO", parametros);
         }
 
-        // Método que actualiza los datos de un estado equipo
         public string actualizaEstadoEquipo(string codigo, string descripcion)
         {
-            mensaje = "";
-            cn = objCon.getConecta();
-            cn.Open();
-            SqlCommand cmd = new SqlCommand("SP_ACTUALIZAESTADOEQUIPO", cn);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.Add("cod", SqlDbType.Char).Value = codigo;
-            cmd.Parameters.Add("des", SqlDbType.VarChar).Value = descripcion;
-            try
-            {
-                int n = cmd.ExecuteNonQuery();
-                mensaje = n.ToString() + " ESTADO EQUIPO ACTUALIZADO CORRECTAMENTE";
-            }
-            catch (SqlException ex)
-            {
-                mensaje = ex.Message;
-            }
-            finally
-            {
-                cn.Close();
-            }
-            return mensaje;
-        }
-        // Método que elimina un registro de estado equipo
-        public string eliminaEstadoEquipo(string codigo)
+            var parametros = new Dictionary<string, object>
         {
-            mensaje = "";
-            cn = objCon.getConecta();
-            cn.Open();
-            SqlCommand cmd = new SqlCommand("SP_ELIMINAESTADOEQUIPO", cn);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.Add("cod", SqlDbType.Char).Value = codigo;
-            try
-            {
-                int n = cmd.ExecuteNonQuery();
-                mensaje = n.ToString() + " ESTADO EQUIPO ELIMINADO CORRECTAMENTE";
-            }
-            catch (SqlException ex)
-            {
-                mensaje = ex.Message;
-            }
-            finally
-            {
-                cn.Close();
-            }
-            return mensaje;
+            { "cod", codigo },
+            { "des", descripcion }
+        };
+            return EjecutarComando("SP_ACTUALIZAESTADOEQUIPO", parametros);
         }
 
+        public string eliminaEstadoEquipo(string codigo)
+        {
+            var parametros = new Dictionary<string, object>
+        {
+            { "cod", codigo }
+        };
+            return EjecutarComando("SP_ELIMINAESTADOEQUIPO", parametros);
+        }
     }
 }

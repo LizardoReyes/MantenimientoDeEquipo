@@ -8,103 +8,50 @@ using System.Threading.Tasks;
 
 namespace MantenimientoDeEquipo
 {
-    class LogicaNegocioTipoEquipo
+    public class LogicaNegocioTipoEquipo : LogicaNegocioBase
     {
-        // Definicion global
-        Conexion objCon = new Conexion();
-        SqlConnection cn = new SqlConnection();
-        string mensaje;
-        // Método que lista tipo equipos
+        // Métodos específicos de LogicaNegocioTipoEquipo
         public DataTable listaTipoEquipos()
         {
-            cn = objCon.getConecta();
-            SqlDataAdapter da = new SqlDataAdapter("SP_LISTATIPOEQUIPOS", cn);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            return dt;
+            return EjecutarConsulta("SP_LISTATIPOEQUIPOS");
         }
-        // Método que genere un nuevo codigo de tipo equipo
+
         public string generaCodigoTipoEquipo()
         {
-            cn = objCon.getConecta();
-            cn.Open();
+            AbrirConexion();
             SqlCommand cmd = new SqlCommand("SP_ULTIMOTIPOEQUIPO", cn);
-            return "TIP" + (int.Parse(cmd.ExecuteScalar().ToString().Substring(3, 3)) +
-           1).ToString("0000");
+            string codigo = "TIP" + (int.Parse(cmd.ExecuteScalar().ToString().Substring(3, 3)) + 1).ToString("0000");
+            CerrarConexion();
+            return codigo;
         }
-        // Método que registra un nuevo tipo equipo
+
         public string nuevoTipoEquipo(string codigo, string descripcion)
         {
-            mensaje = "";
-            cn = objCon.getConecta();
-            cn.Open();
-            SqlCommand cmd = new SqlCommand("SP_NUEVOTIPOEQUIPO", cn);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.Add("cod", SqlDbType.Char).Value = codigo;
-            cmd.Parameters.Add("des", SqlDbType.VarChar).Value = descripcion;
-            try
-            {
-                int n = cmd.ExecuteNonQuery();
-                mensaje = n.ToString() + " TIPO EQUIPO REGISTRADO CORRECTAMENTE";
-            }
-            catch (SqlException ex)
-            {
-                mensaje = ex.Message;
-            }
-            finally
-            {
-                cn.Close();
-            }
-            return mensaje;
+            var parametros = new Dictionary<string, object>
+        {
+            { "cod", codigo },
+            { "des", descripcion }
+        };
+            return EjecutarComando("SP_NUEVOTIPOEQUIPO", parametros);
         }
-        // Método que actualiza los datos de un tipo equipo
+
         public string actualizaTipoEquipo(string codigo, string descripcion)
         {
-            mensaje = "";
-            cn = objCon.getConecta();
-            cn.Open();
-            SqlCommand cmd = new SqlCommand("SP_ACTUALIZATIPOEQUIPO", cn);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.Add("cod", SqlDbType.Char).Value = codigo;
-            cmd.Parameters.Add("des", SqlDbType.VarChar).Value = descripcion;
-            try
-            {
-                int n = cmd.ExecuteNonQuery();
-                mensaje = n.ToString() + " TIPO EQUIPO ACTUALIZADO CORRECTAMENTE";
-            }
-            catch (SqlException ex)
-            {
-                mensaje = ex.Message;
-            }
-            finally
-            {
-                cn.Close();
-            }
-            return mensaje;
+            var parametros = new Dictionary<string, object>
+        {
+            { "cod", codigo },
+            { "des", descripcion }
+        };
+            return EjecutarComando("SP_ACTUALIZATIPOEQUIPO", parametros);
         }
-        // Método que elimina un registro de tipo equipo
+
         public string eliminaTipoEquipo(string codigo)
         {
-            mensaje = "";
-            cn = objCon.getConecta();
-            cn.Open();
-            SqlCommand cmd = new SqlCommand("SP_ELIMINATIPOEQUIPO", cn);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.Add("cod", SqlDbType.Char).Value = codigo;
-            try
-            {
-                int n = cmd.ExecuteNonQuery();
-                mensaje = n.ToString() + " TIPO EQUIPO ELIMINADO CORRECTAMENTE";
-            }
-            catch (SqlException ex)
-            {
-                mensaje = ex.Message;
-            }
-            finally
-            {
-                cn.Close();
-            }
-            return mensaje;
+            var parametros = new Dictionary<string, object>
+        {
+            { "cod", codigo }
+        };
+            return EjecutarComando("SP_ELIMINATIPOEQUIPO", parametros);
         }
     }
 }

@@ -67,6 +67,7 @@
       <DependentUpon>frmTipoEquipo.cs</DependentUpon>
     </Compile>
     <Compile Include="LogicaNegocio.cs" />
+    <Compile Include="LogicaNegocioBase.cs" />
     <Compile Include="LogicaNegocioEstado.cs" />
     <Compile Include="LogicaNegocioTipoEquipo.cs" />
     <Compile Include="Program.cs" />
